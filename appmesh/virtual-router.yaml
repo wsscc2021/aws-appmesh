@@ -1,0 +1,30 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualRouter
+metadata:
+  name: simple-app-foo-virtual-router
+  namespace: simple-app
+spec:
+  awsName: simple-app-foo-virtual-router
+  listeners:
+    - portMapping:
+        port: 8080
+        protocol: http
+  routes:
+    - name: simple-app-foo-route
+      httpRoute:
+        match:
+          prefix: "/"
+        action:
+          weightedTargets:
+            - virtualNodeRef:
+                name: "webapp-loadtest-demo-v4"
+              weight: 1
+        retryPolicy:
+          maxRetries: 2
+          perRetryTimeout:
+              unit: "ms"
+              value: 2000
+          httpRetryEvents:
+              - server-error
+              - client-error
+              - gateway-error

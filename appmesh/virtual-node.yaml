@@ -1,0 +1,41 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualNode
+metadata:
+  name: webapp-loadtest-demo-v4
+  namespace: app
+spec:
+  # awsName: simple-app-foo-v1-virtual-node
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: "webapp-loadtest-demo"
+      app.kubernetes.io/version: "0.0.4-SNAPSHOT"
+  listeners:
+    - portMapping:
+        port: 8080
+        protocol: http
+      healthCheck:
+        path: "/healthcheck"
+        protocol: http
+        healthyThreshold: 2
+        unhealthyThreshold: 3
+        intervalMillis: 10000 # 10s
+        timeoutMillis: 5000 # 5s
+      timeout:
+        http:
+          perRequest:
+            unit: "ms"
+            value: 5000 # 5s
+          # idle:
+          #   unit: "ms"
+          #   value: 10000 # 10s
+  serviceDiscovery:
+    awsCloudMap:
+      namespaceName: "skill53.local"
+      serviceName: "webapp-loadtest-demo"
+      attributes:
+        - key: version
+          value: "v4"
+  logging:
+    accessLog:
+      file:
+        path: "/dev/stdout"
