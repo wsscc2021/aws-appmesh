@@ -18,7 +18,7 @@ spec:
           weightedTargets:
             - virtualNodeRef:
                 name: "webapp-loadtest-demo-v4"
-              weight: 1
+              weight: 100
         retryPolicy:
           maxRetries: 2
           perRetryTimeout:
