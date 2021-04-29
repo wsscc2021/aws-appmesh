@@ -1,10 +1,4 @@
-## 1. Add to Appmesh on AWS Console
-
-AWS Console -> AppMesh -> Create mesh
-- Mesh name: `sample-appmesh`
-- Egress filter: `Allow external traffic`
-
-## 2. Add to CloudMap on AWS Console
+## 1. Add to CloudMap on AWS Console
 
 AWS Console -> CloudMap -> Create namespace
 - Namespace name: `skill53.local`
@@ -14,6 +8,7 @@ AWS Console -> CloudMap -> Create namespace
 ## 2. Add to Custom Resource Definitions
 
 ```
+kubens app
 kubectl apply -k "github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=master"
 ```
 
@@ -37,7 +32,13 @@ helm upgrade -i appmesh-controller eks/appmesh-controller \
     --set serviceAccount.name=appmesh-controller
 ```
 
-## 4. Add to namespace.yaml
+## 4. Add to mesh.yaml
+
+```
+kubectl apply -f mesh.yaml
+```
+
+## 5. Add to namespace.yaml
 
 ```
 kubectl apply -f namespace.yaml
