@@ -1,0 +1,41 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualNode
+metadata:
+  name: sample-app-bar-v1
+  namespace: app
+spec:
+  # awsName: simple-app-foo-v1-virtual-node
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: "sample-app-bar"
+      app.kubernetes.io/version: "v1"
+  listeners:
+    - portMapping:
+        port: 8080
+        protocol: http
+      healthCheck:
+        path: "/healthcheck"
+        protocol: http
+        healthyThreshold: 2
+        unhealthyThreshold: 3
+        intervalMillis: 10000 # 10s
+        timeoutMillis: 5000 # 5s
+      timeout:
+        http:
+          perRequest:
+            unit: "ms"
+            value: 5000 # 5s
+          # idle:
+          #   unit: "ms"
+          #   value: 10000 # 10s
+  serviceDiscovery:
+    awsCloudMap:
+      namespaceName: "skill53.local"
+      serviceName: "sample-app-bar"
+      attributes:
+        - key: version
+          value: "v1"
+  logging:
+    accessLog:
+      file:
+        path: "/dev/stdout"

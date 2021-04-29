@@ -1,0 +1,11 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualService
+metadata:
+  name: sample-app-bar
+  namespace: app
+spec:
+  awsName: sample-app-bar.skill53.local
+  provider:
+    virtualRouter:
+      virtualRouterRef:
+        name: sample-app-bar-router

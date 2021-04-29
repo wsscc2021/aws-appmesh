@@ -1,0 +1,51 @@
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: VirtualGateway
+metadata:
+  name: sample-app-ingress-gw
+  namespace: app
+spec:
+  namespaceSelector:
+    matchLabels:
+      mesh: sample-appmesh
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: "sample-app-ingress-gw"
+      app.kubernetes.io/version: "v1"
+  listeners:
+    - portMapping:
+        port: 8088
+        protocol: http
+  logging:
+    accessLog:
+      file:
+        path: "/dev/stdout"
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: GatewayRoute
+metadata:
+  name: gateway-route-foo
+  namespace: app
+spec:
+  httpRoute:
+    match:
+      prefix: "/foo"
+    action:
+      target:
+        virtualService:
+          virtualServiceRef:
+            name: simple-app-foo
+---
+apiVersion: appmesh.k8s.aws/v1beta2
+kind: GatewayRoute
+metadata:
+  name: gateway-route-bar
+  namespace: app
+spec:
+  httpRoute:
+    match:
+      prefix: "/bar"
+    action:
+      target:
+        virtualService:
+          virtualServiceRef:
+            name: simple-app-bar

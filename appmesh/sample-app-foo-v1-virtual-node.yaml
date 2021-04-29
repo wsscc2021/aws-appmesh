@@ -1,14 +1,14 @@
 apiVersion: appmesh.k8s.aws/v1beta2
 kind: VirtualNode
 metadata:
-  name: webapp-loadtest-demo-v4
+  name: sample-app-foo-v1
   namespace: app
 spec:
   # awsName: simple-app-foo-v1-virtual-node
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: "webapp-loadtest-demo"
-      app.kubernetes.io/version: "0.0.4-SNAPSHOT"
+      app.kubernetes.io/name: "sample-app-foo"
+      app.kubernetes.io/version: "v1"
   listeners:
     - portMapping:
         port: 8080
@@ -31,10 +31,10 @@ spec:
   serviceDiscovery:
     awsCloudMap:
       namespaceName: "skill53.local"
-      serviceName: "webapp-loadtest-demo"
+      serviceName: "sample-app-foo"
       attributes:
         - key: version
-          value: "v4"
+          value: "v1"
   logging:
     accessLog:
       file:

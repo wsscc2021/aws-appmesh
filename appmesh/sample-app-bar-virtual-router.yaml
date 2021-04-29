@@ -1,23 +1,23 @@
 apiVersion: appmesh.k8s.aws/v1beta2
 kind: VirtualRouter
 metadata:
-  name: simple-app-foo-virtual-router
-  namespace: simple-app
+  name: sample-app-bar-router
+  namespace: app
 spec:
-  awsName: simple-app-foo-virtual-router
+  awsName: sample-app-bar-router
   listeners:
     - portMapping:
         port: 8080
         protocol: http
   routes:
-    - name: simple-app-foo-route
+    - name: sample-app-bar-route
       httpRoute:
         match:
           prefix: "/"
         action:
           weightedTargets:
             - virtualNodeRef:
-                name: "webapp-loadtest-demo-v4"
+                name: "sample-app-bar-v1"
               weight: 100
         retryPolicy:
           maxRetries: 2
