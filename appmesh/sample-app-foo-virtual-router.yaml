@@ -18,7 +18,10 @@ spec:
           weightedTargets:
             - virtualNodeRef:
                 name: "sample-app-foo-v1"
-              weight: 100
+              weight: 90
+            - virtualNodeRef:
+                name: "sample-app-foo-v2"
+              weight: 10
         retryPolicy:
           maxRetries: 2
           perRetryTimeout:

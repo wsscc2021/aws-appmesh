@@ -33,7 +33,7 @@ spec:
       target:
         virtualService:
           virtualServiceRef:
-            name: simple-app-foo
+            name: sample-app-foo
 ---
 apiVersion: appmesh.k8s.aws/v1beta2
 kind: GatewayRoute
@@ -48,4 +48,4 @@ spec:
       target:
         virtualService:
           virtualServiceRef:
-            name: simple-app-bar
+            name: sample-app-bar

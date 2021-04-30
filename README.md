@@ -43,3 +43,8 @@ kubectl apply -f mesh.yaml
 ```
 kubectl apply -f namespace.yaml
 ```
+
+## 6. Add to IRSA for EnvoyAccess
+
+https://docs.aws.amazon.com/app-mesh/latest/userguide/proxy-authorization.html
+
