@@ -4,4 +4,5 @@ metadata:
   name: app
   labels:
     mesh: "sample-appmesh"
+    gateway: "sample-app-ingress-gw"
     appmesh.k8s.aws/sidecarInjectorWebhook: "enabled"
