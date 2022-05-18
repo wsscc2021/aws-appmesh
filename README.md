@@ -91,3 +91,9 @@ kubectl apply -k "github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=
     - https://docs.aws.amazon.com/app-mesh/latest/userguide/proxy-authorization.html
     - `AWSAppMeshEnvoyAccess`
     - `AWSXrayWriteOnlyAccess`
+
+## 5. allow external traffic
+
+- virtual-gateway - envoy proxy healthcheck
+    - tcp port `9901`
+    - http path `/server_info`
