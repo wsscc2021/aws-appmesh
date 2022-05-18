@@ -1,65 +1,93 @@
-## 1. Add to CloudMap on AWS Console
+## 1. CloudMap on AWS Console
 
 AWS Console -> CloudMap -> Create namespace
 - Namespace name: `skill53.local`
 - Namespace description: `This is discovery for sample-appmesh`
 - Instance discovery: `API calls and DNS queries in VPCs`
 
-## 2. Add to Custom Resource Definitions
+## 2. Custom Resource Definitions
 
 ```
-kubens app
-kubectl apply -k "github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=master"
+kubectl apply -k "github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=master" -n ${app_namespace}
 ```
 
-## 3. Add to Appmesh Controller
+## 3. appmesh-controller
 
-```
-curl -o controller-iam-policy.json https://raw.githubusercontent.com/aws/aws-app-mesh-controller-for-k8s/master/config/iam/controller-iam-policy.json
-```
-```
-aws iam create-policy \
-    --policy-name AWSAppMeshK8sControllerIAMPolicy \
-    --policy-document file://controller-iam-policy.json
-```
-```
-eksctl utils associate-iam-oidc-provider --region=$AWS_REGION \
-    --cluster=$CLUSTER_NAME \
-    --approve
-```
-```
-eksctl create iamserviceaccount --cluster $CLUSTER_NAME \
-    --namespace appmesh-system \
-    --name appmesh-controller \
-    --attach-policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/AWSAppMeshK8sControllerIAMPolicy  \
-    --override-existing-serviceaccounts \
-    --approve
-```
-```
-helm repo add eks https://aws.github.io/eks-charts
-helm upgrade -i appmesh-controller eks/appmesh-controller \
-    --namespace appmesh-system \
-    --set region=$AWS_REGION \
-    --set serviceAccount.create=false \
-    --set serviceAccount.name=appmesh-controller
-```
+- associate oidc provider
+    ```
+    eksctl utils associate-iam-oidc-provider --region=$AWS_REGION \
+        --cluster=$CLUSTER_NAME \
+        --approve
+    ```
 
-## 4. Add to mesh.yaml
+- create iam policy for appmesh-controller
+    ```
+    curl -o controller-iam-policy.json https://raw.githubusercontent.com/aws/aws-app-mesh-controller-for-k8s/master/config/iam/controller-iam-policy.json
+    ```
+    ```
+    aws iam create-policy \
+        --policy-name AWSAppMeshK8sControllerIAMPolicy \
+        --policy-document file://controller-iam-policy.json
+    ```
 
-```
-kubectl apply -f mesh.yaml
-```
+- create iam role for service account 
+    ```
+    eksctl create iamserviceaccount --cluster $CLUSTER_NAME \
+        --namespace appmesh-system \
+        --name appmesh-controller \
+        --attach-policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/AWSAppMeshK8sControllerIAMPolicy  \
+        --override-existing-serviceaccounts \
+        --approve
+    ```
 
-## 5. Add to namespace.yaml
+- add helm repo
+    ```
+    helm repo add eks https://aws.github.io/eks-charts
+    ```
 
-```
-kubectl apply -f namespace.yaml
-```
+- install helm chart
+    ```
+    helm upgrade -i appmesh-controller eks/appmesh-controller \
+        --namespace appmesh-system \
+        --set region=$AWS_REGION \
+        --set serviceAccount.create=false \
+        --set serviceAccount.name=appmesh-controller
+    ```
+    
+    - if you need tolerations.
+        ```
+        helm repo add eks https://aws.github.io/eks-charts
+        helm upgrade -i appmesh-controller eks/appmesh-controller \
+        --namespace appmesh-system \
+        --set region=$AWS_REGION \
+        --set serviceAccount.create=false \
+        --set serviceAccount.name=appmesh-controller \
+        --set tolerations\[0\].key="Management" \
+        --set tolerations\[0\].value="Tools" \
+        --set tolerations\[0\].effect="NoSchedule"
+        ```
 
-## 6. Add to IRSA for EnvoyAccess and X-Ray write
+## 4. appmesh resources
 
-https://docs.aws.amazon.com/app-mesh/latest/userguide/proxy-authorization.html
+- appmesh - mesh
+    ```
+    kubectl apply -f mesh.yaml
+    ```
 
-Managed policy
-- `AWSAppMeshEnvoyAccess`
-- `AWSXrayWriteOnlyAccess`
+- add annotation to namespace
+    ```
+    kubectl apply -f namespace.yaml
+    ```
+
+- iam role for service account to virtual node
+    ```
+    eksctl create iamserviceaccount --cluster $CLUSTER_NAME \
+        --namespace ${app_namespace} \
+        --name appmesh-controller \
+        --attach-policy-arn arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess \
+        --override-existing-serviceaccounts \
+        --approve
+    ```
+    - https://docs.aws.amazon.com/app-mesh/latest/userguide/proxy-authorization.html
+    - `AWSAppMeshEnvoyAccess`
+    - `AWSXrayWriteOnlyAccess`
