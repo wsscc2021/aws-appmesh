@@ -3,7 +3,7 @@
 AWS Console -> CloudMap -> Create namespace
 - Namespace name: `skill53.local`
 - Namespace description: `This is discovery for sample-appmesh`
-- Instance discovery: `API calls and DNS queries in VPCs.
+- Instance discovery: `API calls and DNS queries in VPCs`
 
 ## 2. Add to Custom Resource Definitions
 
@@ -14,7 +14,19 @@ kubectl apply -k "github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=
 
 ## 3. Add to Appmesh Controller
 
-Reference to aws-cdk on gitHub
+```
+curl -o controller-iam-policy.json https://raw.githubusercontent.com/aws/aws-app-mesh-controller-for-k8s/master/config/iam/controller-iam-policy.json
+```
+```
+aws iam create-policy \
+    --policy-name AWSAppMeshK8sControllerIAMPolicy \
+    --policy-document file://controller-iam-policy.json
+```
+```
+eksctl utils associate-iam-oidc-provider --region=$AWS_REGION \
+    --cluster=$CLUSTER_NAME \
+    --approve
+```
 ```
 eksctl create iamserviceaccount --cluster $CLUSTER_NAME \
     --namespace appmesh-system \
