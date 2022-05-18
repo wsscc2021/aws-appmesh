@@ -39,3 +39,8 @@ spec:
     accessLog:
       file:
         path: "/dev/stdout"
+  # backends:
+  #   - virtualService:
+  #       virtualServiceRef:
+  #         namespace: dev
+  #         name: sample-app-foo
