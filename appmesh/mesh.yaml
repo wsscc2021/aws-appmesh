@@ -7,3 +7,5 @@ spec:
   namespaceSelector:
     matchLabels:
       mesh: sample-appmesh
+  egressFilter:
+    type: ALLOW_ALL # ALLOW_ALL | DROP_ALL
