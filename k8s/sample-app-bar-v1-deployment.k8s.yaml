@@ -15,6 +15,7 @@ spec:
         app.kubernetes.io/name: sample-app-bar
         app.kubernetes.io/version: v1
     spec:
+      serviceAccountName: appmesh-virtual-node
       containers:
         - image: 242593025403.dkr.ecr.us-west-2.amazonaws.com/sample-app-bar:v1
           livenessProbe:
